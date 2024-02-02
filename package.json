@@ -1,0 +1,14 @@
+{
+  "name": "jpeg.js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "jpeg-exif": "^1.1.4",
+    "restructure": "^3.0.0",
+    "vitest": "^1.2.2"
+  }
+}
