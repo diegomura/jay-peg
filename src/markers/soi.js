@@ -1,3 +1,5 @@
-const StartOfImageMarker = {};
+const StartOfImageMarker = {
+  name: () => 'SOI'
+};
 
 export default StartOfImageMarker;

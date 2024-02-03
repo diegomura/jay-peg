@@ -157,8 +157,6 @@ class IDFEntries {
         ? dataValue.readUInt32BE(pos)
         : dataValue.readUInt32LE(pos);
 
-    let tagValue;
-
     switch (dataFormat) {
       case 1:
         return dataValue.readUInt8(0);
@@ -178,24 +176,8 @@ class IDFEntries {
         return tagValue;
       case 7:
         return null;
-      // switch (tagName) {
-      //   case 'ExifVersion':
-      //     tagValue = dataValue.toString()
-      //     break
-      //   case 'FlashPixVersion':
-      //     tagValue = dataValue.toString()
-      //     break
-      //   case 'SceneType':
-      //     tagValue = dataValue.readUInt8(0)
-      //     break
-      //   default:
-      //     tagValue = '0x' + dataValue.toString('hex', 0, 15)
-      //     break
-      // }
-      // break
       case 10: {
         return uint32(0) / uint32(4);
-        break;
       }
       default:
         return "0x" + dataValue.toString("hex");
@@ -301,14 +283,17 @@ class TIFFHeader {
 
     stream.pos += 2;
 
-    return IFDData(bigEndian).decode(stream, parent);
+    const data = IFDData(bigEndian).decode(stream, parent);
+
+    return data.entries
   }
 }
 
 const EXIFMarker = {
+  name: () => 'EXIF',
   length: r.uint16be,
   identifier: new r.String(6),
-  tiffHeader: new TIFFHeader(),
+  entries: new TIFFHeader(),
 };
 
 export default EXIFMarker;

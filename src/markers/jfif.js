@@ -1,6 +1,7 @@
 import * as r from "restructure";
 
 const JFIFMarker = {
+  name: () => 'JFIF',
   length: r.uint16be,
   identifier: new r.String(5),
   version: r.uint16be,

@@ -6,6 +6,7 @@ const DACTable = new r.Struct({
 });
 
 const DACMarker = {
+  name: () => 'DAC',
   length: r.uint16be,
   tables: new r.Array(DACTable, (parent) => parent.length / 2),
 };
