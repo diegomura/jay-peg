@@ -7,7 +7,7 @@ const FrameColorComponent = new r.Struct({
 });
 
 const StartOfFrameMarker = {
-  name: () => 'SOF',
+  name: () => "SOF",
   length: r.uint16be,
   precision: r.uint8,
   height: r.uint16be,

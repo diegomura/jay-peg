@@ -1,5 +1,5 @@
 const EndOfImageMarker = {
-  name: () => 'EOI'
+  name: () => "EOI",
 };
 
 export default EndOfImageMarker;

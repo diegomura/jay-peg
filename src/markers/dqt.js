@@ -1,7 +1,7 @@
 import * as r from "restructure";
 
 const DQTMarker = {
-  name: () => 'DQT',
+  name: () => "DQT",
   length: r.uint16be,
   tables: new r.Array(
     new r.Struct({

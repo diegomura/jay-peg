@@ -9,7 +9,7 @@ const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const images = fs.readdirSync(`${__dirname}/images`);
 
 expect.addSnapshotSerializer({
-  serialize: (val) => val.toString('hex'),
+  serialize: (val) => val.toString("hex"),
   test: (val) => Buffer.isBuffer(val),
 });
 
