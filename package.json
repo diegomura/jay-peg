@@ -1,14 +1,16 @@
 {
-  "name": "jpeg.js",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "jay-peg",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "test": "vitest"
   },
   "dependencies": {
-    "jpeg-exif": "^1.1.4",
-    "restructure": "^3.0.0",
+    "restructure": "^3.0.0"
+  },
+  "devDependencies": {
     "vitest": "^1.2.2"
   }
 }
