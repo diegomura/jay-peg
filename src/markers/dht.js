@@ -35,7 +35,7 @@ class HuffmanTableElements {
 }
 
 const DefineHuffmanTableMarker = {
-  name: () => 'DHT',
+  name: () => "DHT",
   length: r.uint16be,
   tables: new HuffmanTableElements(),
 };

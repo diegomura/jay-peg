@@ -4,7 +4,7 @@ import url from "url";
 import path from "path";
 import Benchmark from "benchmark";
 
-import JPEG from '../src/index.js'
+import JPEG from "../src/index.js";
 
 const suite = new Benchmark.Suite();
 

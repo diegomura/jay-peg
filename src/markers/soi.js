@@ -1,5 +1,5 @@
 const StartOfImageMarker = {
-  name: () => 'SOI'
+  name: () => "SOI",
 };
 
 export default StartOfImageMarker;

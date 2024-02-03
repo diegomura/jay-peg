@@ -30,7 +30,7 @@ const SOSComponentSpecification = new r.Struct({
 });
 
 const SOSMarker = {
-  name: () => 'SOS',
+  name: () => "SOS",
   length: r.uint16be,
   numberOfImageComponents: r.uint8,
   componentSpecifications: new r.Array(

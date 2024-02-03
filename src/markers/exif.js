@@ -285,12 +285,12 @@ class TIFFHeader {
 
     const data = IFDData(bigEndian).decode(stream, parent);
 
-    return data.entries
+    return data.entries;
   }
 }
 
 const EXIFMarker = {
-  name: () => 'EXIF',
+  name: () => "EXIF",
   length: r.uint16be,
   identifier: new r.String(6),
   entries: new TIFFHeader(),

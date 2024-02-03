@@ -1,5 +1,15 @@
 # jay-peg
 
+<a href="https://www.npmjs.com/package/jay-peg">
+  <img src="https://img.shields.io/npm/v/jay-peg.svg" />
+</a>
+<a href="https://github.com/diegomura/jay-peg/blob/master/LICENSE">
+  <img src="https://img.shields.io/github/license/diegomura/jay-peg.svg" />
+</a>
+<a href="https://github.com/prettier/prettier">
+  <img src="https://img.shields.io/badge/styled_with-prettier-ff69b4.svg" />
+</a>
+
 ## Overview
 
 A blazing-fast and compact JavaScript library dedicated to efficiently decoding JPEG images.
@@ -39,25 +49,25 @@ The output consists of a structured array of image markers:
 [
   {
     type: 65496,
-    name: 'SOI',
+    name: "SOI",
   },
   {
     type: 65505,
-    name: 'EXIF',
+    name: "EXIF",
     length: 16382,
     identifier: "Exif\x00\x00",
     entries: [Object],
   },
   {
     type: 65499,
-    name: 'DAC',
+    name: "DAC",
     length: 132,
-    tables: [[Object], [Object]]
+    tables: [[Object], [Object]],
   },
   // ... and so forth
   {
     type: 65497,
-    name: 'EOI',
+    name: "EOI",
   },
 ];
 ```
