@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fast and small JavaScript library dedicated to the efficient decoding of JPEG images.
+A blazing-fast and compact JavaScript library dedicated to efficiently decoding JPEG images.
 
 ## Installation
 
@@ -23,7 +23,7 @@ yarn add jay-peg
 Use the `decoder` providing a JPEG data buffer as input.
 
 ```javascript
-const JPEG = require('jay-peg');
+import JPEG from 'jay-peg';
 
 const jpegBuffer = /* your JPEG buffer here */;
 const imageMarkers = JPEG.decoder(jpegBuffer);
@@ -84,6 +84,16 @@ Each `ImageMarker` object in the output array adheres to the following structure
 - `name` (String): The marker name.
 - `length` (Number): The length of the marker data.
 - Additional properties specific to certain marker types.
+
+## Performance
+
+Performance is a key focus of `jay-peg``. In a benchmark test using a 2448×3264, 2.2MB JPEG image, the decoding speed was measured as follows:
+
+```
+Benchmarked: decode: x 2,772 ops/sec ±0.23% (98 runs sampled)
+```
+
+It's worth noting that the performance is significantly improved on smaller and simpler images.
 
 ## License
 

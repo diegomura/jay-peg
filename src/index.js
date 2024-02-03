@@ -1,15 +1,15 @@
 import * as r from "restructure";
 
-import DACMarker from "./markers/dac";
-import DefineHuffmanTableMarker from "./markers/dht";
-import DQTMarker from "./markers/dqt";
-import DRIMarker from "./markers/dri";
-import EndOfImageMarker from "./markers/eoi";
-import EXIFMarker from "./markers/exif";
-import JFIFMarker from "./markers/jfif";
-import SOSMarker from "./markers/sos";
-import StartOfFrameMarker from "./markers/sof";
-import StartOfImageMarker from "./markers/soi";
+import DACMarker from "./markers/dac.js";
+import DefineHuffmanTableMarker from "./markers/dht.js";
+import DQTMarker from "./markers/dqt.js";
+import DRIMarker from "./markers/dri.js";
+import EndOfImageMarker from "./markers/eoi.js";
+import EXIFMarker from "./markers/exif.js";
+import JFIFMarker from "./markers/jfif.js";
+import SOSMarker from "./markers/sos.js";
+import StartOfFrameMarker from "./markers/sof.js";
+import StartOfImageMarker from "./markers/soi.js";
 
 const UnkownMarker = {
   length: r.uint16be,

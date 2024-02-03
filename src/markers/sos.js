@@ -5,13 +5,17 @@ class ImageData {
     const buffer = stream.buffer.slice(stream.pos);
 
     let length = 0;
+    let i = buffer.indexOf(0xff);
 
-    for (length; length < buffer.length; length++) {
-      const currentByte = buffer[length];
+    while (i !== -1) {
+      length = i;
+
       const nextByte = buffer[length + 1];
       const comesRestart = nextByte >= 0xd0 && nextByte <= 0xd7;
 
-      if (currentByte === 0xff && nextByte !== 0x00 && !comesRestart) break;
+      if (nextByte !== 0x00 && !comesRestart) break;
+
+      i = buffer.indexOf(0xff, i + 1);
     }
 
     stream.pos += length;

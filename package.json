@@ -11,12 +11,15 @@
   ],
   "scripts": {
     "test": "vitest",
+    "benchmark": "node ./benchmark",
     "format": "yarn prettier . --write"
   },
   "dependencies": {
     "restructure": "^3.0.0"
   },
   "devDependencies": {
+    "benchmark": "^2.1.4",
+    "colors": "^1.4.0",
     "prettier": "3.2.4",
     "vitest": "^1.2.2"
   }
