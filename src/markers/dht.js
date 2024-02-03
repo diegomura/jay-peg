@@ -1,4 +1,5 @@
 import * as r from "restructure";
+import { concatenateUint8Arrays, readUInt8 } from "./utils.js";
 
 class HuffmanTableElements {
   decode(stream, parent) {
@@ -13,7 +14,7 @@ class HuffmanTableElements {
       let offset = 1;
 
       const elements = [];
-      const identifier = buffer.readUInt8();
+      const identifier = readUInt8(buffer, 0);
       const lengths = buffer.slice(offset, offset + 16);
 
       offset += 16;
@@ -25,7 +26,7 @@ class HuffmanTableElements {
 
       buffer = buffer.slice(offset);
 
-      tables[identifier] = Buffer.concat(elements);
+      tables[identifier] = concatenateUint8Arrays(elements);
     }
 
     stream.pos += parent.length - 2;
