@@ -4,6 +4,11 @@
   "main": "src/index.js",
   "type": "module",
   "license": "MIT",
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "vitest",
     "format": "yarn prettier . --write"
