@@ -1,18 +1,36 @@
 {
   "name": "jay-peg",
+  "description": "Performant JPEG decoder",
   "version": "0.0.1",
-  "main": "src/index.js",
   "type": "module",
   "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./src/index.js",
+  "source": "./src/index.js",
+  "exports": {
+    "import": "./src/index.js",
+    "require": "./dist/main.cjs"
+  },
+  "targets": {
+    "module": false
+  },
+  "keywords": [
+    "binary",
+    "jpeg",
+    "decode"
+  ],
   "files": [
     "src",
+    "dist",
     "LICENSE",
     "README.md"
   ],
   "scripts": {
     "test": "vitest",
     "benchmark": "node ./benchmark",
-    "format": "yarn prettier . --write"
+    "format": "yarn prettier . --write",
+    "build": "parcel build",
+    "prepublishOnly": "parcel build"
   },
   "dependencies": {
     "restructure": "^3.0.0"
