@@ -1,12 +1,13 @@
 import fs from 'fs'
 import url from 'url'
 import path from 'path'
+import exif from 'jpeg-exif'
 import { describe, it } from 'vitest'
 import * as r from 'restructure'
 import tags from './tags.json'
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url))
-const buffer = fs.readFileSync(`${__dirname}/images/orientation-1.jpeg`)
+const buffer = fs.readFileSync(`${__dirname}/images/me.jpeg`)
 
 const UnkownMarker = {
   length: r.uint16be,
@@ -18,6 +19,25 @@ const SOSComponentSpecification = new r.Struct({
   entropyCodingTable: new r.Buffer(1),
 })
 
+class ImageData {
+  decode(stream) {
+    const buffer = stream.buffer.slice(stream.pos)
+
+    let length = 0
+
+    for (length; length < buffer.length; length++) {
+      const currentByte = buffer[length]
+      const nextByte = buffer[length + 1]
+
+      if (currentByte === 0xff && nextByte !== 0x00) break
+    }
+
+    stream.pos += length
+
+    return buffer.slice(0, length)
+  }
+}
+
 const SOSMarker = {
   length: r.uint16be,
   numberOfImageComponents: r.uint8,
@@ -25,7 +45,7 @@ const SOSMarker = {
   startOfSpectral: r.uint8,
   endOfSpectral: r.uint8,
   successiveApproximationBit: new r.Buffer(1),
-  buf: new r.Buffer(Infinity),
+  data: new ImageData(),
 }
 
 const FrameColorComponent = new r.Struct({
@@ -44,24 +64,39 @@ const StartOfFrameMarker = {
 }
 
 class HuffmanTableElements {
-   decode(stream, parent) {
-    const elements = []
+  decode(stream, parent) {
+    const tables = {}
 
-    for (const length of parent.lengths) {
-      elements.push(stream.buffer.slice(stream.pos, stream.pos + length))
-      stream.pos += length
+    let buffer = stream.buffer.slice(stream.pos, stream.pos + parent.length - 2)
 
+    while (buffer.length > 0) {
+      let offset = 1
+
+      const elements = []
+      const identifier = buffer.readUInt8()
+      const lengths = buffer.slice(offset, offset + 16)
+
+      offset += 16
+
+      for (const length of lengths) {
+        elements.push(buffer.slice(offset, offset + length))
+        offset += length
+      }
+
+      buffer = buffer.slice(offset)
+
+      tables[identifier] = Buffer.concat(elements)
     }
 
-    return Buffer.concat(elements)
-   }
+    stream.pos += parent.length - 2
+
+    return tables
+  }
 }
 
 const DefineHuffmanTableMarker = {
   length: r.uint16be,
-  identifier: r.uint8,
-  lengths: new r.Buffer(16),
-  elements: new HuffmanTableElements(),
+  tables: new HuffmanTableElements(),
 }
 
 const JPGMarker = UnkownMarker
@@ -80,10 +115,13 @@ const RestartMarker = {}
 
 const DQTMarker = {
   length: r.uint16be,
-  tables: new r.Array(new r.Struct({
-    identifier: new r.Buffer(1),
-    data: new r.Buffer(64)
-  }), parent => (parent.length - 2) / 65)
+  tables: new r.Array(
+    new r.Struct({
+      identifier: new r.Buffer(1),
+      data: new r.Buffer(64),
+    }),
+    (parent) => (parent.length - 2) / 65
+  ),
 }
 
 const DRIMarker = {
@@ -198,6 +236,12 @@ class IDFEntries {
   decode(stream, parent) {
     const buffer = stream.buffer.slice(stream.pos)
     const offsetToFirstIFD = parent.offsetToFirstIFD
+
+    if (offsetToFirstIFD > buffer.length) {
+      stream.pos += parent.parent.length - 16
+      return {}
+    }
+
     const entries = this._decodeIDFEntries(buffer, tags.ifd, offsetToFirstIFD)
     const { exifIFDPointer, gpsInfoIFDPointer } = entries
 
@@ -222,56 +266,68 @@ const IFDData = (bigEndian) => {
   const uint16 = bigEndian ? r.uint16be : r.uint16le
   const uint32 = bigEndian ? r.uint32be : r.uint32le
 
-  return {
+  return new r.Struct({
     fortyTwo: uint16,
     offsetToFirstIFD: uint32,
     entries: new IDFEntries(bigEndian),
-  }
+  })
 }
 
-const TIFFHeader = new r.VersionedStruct(new r.String(2), {
-  MM: IFDData(true),
-  II: IFDData(false),
-})
+class TIFFHeader {
+  decode(stream, parent) {
+    const byteOrder = stream.buffer.slice(stream.pos, stream.pos + 2).toString()
+    const bigEndian = byteOrder === 'MM'
+
+    stream.pos += 2
+
+    return IFDData(bigEndian).decode(stream, parent)
+  }
+}
 
 const EXIFMarker = {
   length: r.uint16be,
   identifier: new r.String(6),
-  tiffHeader: TIFFHeader,
+  tiffHeader: new TIFFHeader(),
 }
+
+const StartOfImageMarker = {}
+
+const EndOfImageMarker = {}
 
 const unknownMarkers = Array(63)
   .fill(0)
-  .reduce((acc, v, i) => ({ ...acc, [i + 65472]: UnkownMarker }), {})
+  .reduce((acc, v, i) => ({ ...acc, [i + 0xffc0]: UnkownMarker }), {})
 
 const restartMarkers = Array(8)
   .fill(0)
-  .reduce((acc, v, i) => ({ ...acc, [i + 65488]: RestartMarker }), {})
+  .reduce((acc, v, i) => ({ ...acc, [i + 0xffd0]: RestartMarker }), {})
 
 const Marker = new r.VersionedStruct(r.uint16be, {
   ...unknownMarkers,
   ...restartMarkers,
-  65472: StartOfFrameMarker,
-  65473: StartOfFrameMarker,
-  65474: StartOfFrameMarker,
-  65475: StartOfFrameMarker,
-  65476: DefineHuffmanTableMarker,
-  65477: StartOfFrameMarker,
-  65478: StartOfFrameMarker,
-  65479: StartOfFrameMarker,
-  65480: JPGMarker,
-  65481: StartOfFrameMarker,
-  65482: StartOfFrameMarker,
-  65483: StartOfFrameMarker,
-  65484: DACMarker,
-  65485: StartOfFrameMarker,
-  65486: StartOfFrameMarker,
-  65487: StartOfFrameMarker,
-  65498: SOSMarker,
-  65499: DQTMarker,
-  65501: DRIMarker,
-  65504: JFIFMarker,
-  65505: EXIFMarker,
+  0xffc0: StartOfFrameMarker,
+  0xffc1: StartOfFrameMarker,
+  0xffc2: StartOfFrameMarker,
+  0xffc3: StartOfFrameMarker,
+  0xffc4: DefineHuffmanTableMarker,
+  0xffc5: StartOfFrameMarker,
+  0xffc6: StartOfFrameMarker,
+  0xffc7: StartOfFrameMarker,
+  0xffc8: JPGMarker,
+  0xffc9: StartOfFrameMarker,
+  0xffca: StartOfFrameMarker,
+  0xffcb: StartOfFrameMarker,
+  0xffcc: DACMarker,
+  0xffcd: StartOfFrameMarker,
+  0xffce: StartOfFrameMarker,
+  0xffcf: StartOfFrameMarker,
+  0xffd8: StartOfImageMarker,
+  0xffd9: EndOfImageMarker,
+  0xffda: SOSMarker,
+  0xffdb: DQTMarker,
+  0xffdd: DRIMarker,
+  0xffe0: JFIFMarker,
+  0xffe1: EXIFMarker,
 })
 
 const JPEG = new r.Array(Marker)
@@ -281,11 +337,8 @@ describe('exif', () => {
     // const d = exif.fromBuffer(buffer)
     // console.log(d);
 
-    const soi = buffer.slice(0, 2).readUInt16BE(0)
-    const eoi = buffer.slice(buffer.length - 2).readUInt16BE(0)
+    const markers = JPEG.fromBuffer(buffer)
 
-    const markers = JPEG.fromBuffer(buffer.slice(2, buffer.length - 2))
-
-    console.log(markers.filter((m) => m.version === 65476))
+    console.log(markers)
   })
 })
