@@ -9,9 +9,15 @@ import JPEG from "../src/index.js";
 const suite = new Benchmark.Suite();
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const buffer = fs.readFileSync(`${__dirname}/daft-punk.jpeg`);
+const small = fs.readFileSync(`${__dirname}/small.jpg`);
+const medium = fs.readFileSync(`${__dirname}/medium.jpg`);
+const large = fs.readFileSync(`${__dirname}/large.jpg`);
+const huge = fs.readFileSync(`${__dirname}/huge.jpg`);
 
-suite.add("decode".magenta + ": ".green, () => JPEG.decode(buffer));
+suite.add("small".magenta + ": ".green, () => JPEG.decode(small));
+suite.add("medium".magenta + ": ".green, () => JPEG.decode(medium));
+suite.add("large".magenta + ": ".green, () => JPEG.decode(large));
+suite.add("huge".magenta + ": ".green, () => JPEG.decode(huge));
 
 console.log("=== TESTS OPS/SECOND ===".magenta);
 
