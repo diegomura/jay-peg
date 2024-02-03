@@ -1,4 +1,12 @@
 import * as r from "restructure";
+import {
+  readUInt16BE,
+  readUInt16LE,
+  readUInt32BE,
+  readUInt32LE,
+  uint8ArrayToHexString,
+  uint8ArrayToString,
+} from "./utils.js";
 
 const tags = {
   ifd: {
@@ -150,12 +158,13 @@ class IDFEntries {
   _getTagValue(dataValue, dataFormat) {
     const uint16 = (pos) =>
       this.bigEndian
-        ? dataValue.readUInt16BE(pos)
-        : dataValue.readUInt16LE(pos);
+        ? readUInt16BE(dataValue, pos)
+        : readUInt16LE(dataValue, pos);
+
     const uint32 = (pos) =>
       this.bigEndian
-        ? dataValue.readUInt32BE(pos)
-        : dataValue.readUInt32LE(pos);
+        ? readUInt32BE(dataValue, pos)
+        : readUInt32LE(dataValue, pos);
 
     switch (dataFormat) {
       case 1:
@@ -190,9 +199,10 @@ class IDFEntries {
     const entries = {};
 
     const uint16 = (pos) =>
-      this.bigEndian ? buffer.readUInt16BE(pos) : buffer.readUInt16LE(pos);
+      this.bigEndian ? readUInt16BE(buffer, pos) : readUInt16LE(buffer, pos);
+
     const uint32 = (pos) =>
-      this.bigEndian ? buffer.readUInt32BE(pos) : buffer.readUInt32LE(pos);
+      this.bigEndian ? readUInt32BE(buffer, pos) : readUInt32LE(buffer, pos);
 
     const numberOfEntries = uint16(0);
 
@@ -207,17 +217,20 @@ class IDFEntries {
 
       if (dataLength > 4) {
         const valueOffset = this.bigEndian
-          ? dataValue.readUInt32BE(0)
-          : dataValue.readUInt32LE(0);
+          ? readUInt32BE(dataValue, 0)
+          : readUInt32LE(dataValue, 0);
+
         const dataOffset = valueOffset - offset;
 
         dataValue = buffer.slice(dataOffset, dataOffset + dataLength);
       }
 
       const tagValue = this._getTagValue(dataValue, dataFormat);
+
       const tagNumber = this.bigEndian
-        ? tagAddress.toString("hex")
-        : tagAddress.reverse().toString("hex");
+        ? uint8ArrayToHexString(tagAddress)
+        : uint8ArrayToHexString(tagAddress.reverse());
+
       const tagName = tags[tagNumber];
 
       entries[tagName] = tagValue;
@@ -276,9 +289,10 @@ const IFDData = (bigEndian) => {
 
 class TIFFHeader {
   decode(stream, parent) {
-    const byteOrder = stream.buffer
-      .slice(stream.pos, stream.pos + 2)
-      .toString();
+    const byteOrder = uint8ArrayToString(
+      stream.buffer.slice(stream.pos, stream.pos + 2),
+    );
+
     const bigEndian = byteOrder === "MM";
 
     stream.pos += 2;

@@ -74,13 +74,13 @@ The output consists of a structured array of image markers:
 
 ## API
 
-### `decoder(buffer: Buffer): Array<ImageMarker>`
+### `decoder(buffer: Buffer | Uint8Array): Array<ImageMarker>`
 
 The `decoder` function accepts a JPEG buffer as its sole argument and returns an array of image markers.
 
 #### Parameters
 
-- `buffer`: A Buffer containing the JPEG image data.
+- `buffer`: A Buffer or Uint8Array containing the JPEG image data.
 
 #### Returns
 
