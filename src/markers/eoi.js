@@ -1,3 +1,3 @@
-const EndOfImageMarker = {}
+const EndOfImageMarker = {};
 
 export default EndOfImageMarker;

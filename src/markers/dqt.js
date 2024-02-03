@@ -1,4 +1,4 @@
-import * as r from 'restructure'
+import * as r from "restructure";
 
 const DQTMarker = {
   length: r.uint16be,
@@ -7,8 +7,8 @@ const DQTMarker = {
       identifier: new r.Buffer(1),
       data: new r.Buffer(64),
     }),
-    (parent) => (parent.length - 2) / 65
+    (parent) => (parent.length - 2) / 65,
   ),
-}
+};
 
-export default DQTMarker
+export default DQTMarker;

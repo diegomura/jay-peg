@@ -1,3 +1,3 @@
-const StartOfImageMarker = {}
+const StartOfImageMarker = {};
 
 export default StartOfImageMarker;

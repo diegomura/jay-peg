@@ -5,12 +5,14 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "format": "yarn prettier . --write"
   },
   "dependencies": {
     "restructure": "^3.0.0"
   },
   "devDependencies": {
+    "prettier": "3.2.4",
     "vitest": "^1.2.2"
   }
 }

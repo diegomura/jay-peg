@@ -1,10 +1,10 @@
-import * as r from 'restructure'
+import * as r from "restructure";
 
 const FrameColorComponent = new r.Struct({
   id: r.uint8,
   samplingFactors: r.uint8,
   quantizationTableId: r.uint8,
-})
+});
 
 const StartOfFrameMarker = {
   length: r.uint16be,
@@ -12,7 +12,10 @@ const StartOfFrameMarker = {
   height: r.uint16be,
   width: r.uint16be,
   numberOfComponents: r.uint8,
-  components: new r.Array(FrameColorComponent, (parent) => parent.numberOfComponents),
-}
+  components: new r.Array(
+    FrameColorComponent,
+    (parent) => parent.numberOfComponents,
+  ),
+};
 
-export default StartOfFrameMarker
+export default StartOfFrameMarker;

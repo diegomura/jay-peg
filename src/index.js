@@ -1,24 +1,24 @@
-import * as r from 'restructure'
+import * as r from "restructure";
 
-import DACMarker from './markers/dac'
-import DefineHuffmanTableMarker from './markers/dht'
-import DQTMarker from './markers/dqt'
-import DRIMarker from './markers/dri'
-import EndOfImageMarker from './markers/eoi'
-import EXIFMarker from './markers/exif'
-import JFIFMarker from './markers/jfif'
-import SOSMarker from './markers/sos'
-import StartOfFrameMarker from './markers/sof'
-import StartOfImageMarker from './markers/soi'
+import DACMarker from "./markers/dac";
+import DefineHuffmanTableMarker from "./markers/dht";
+import DQTMarker from "./markers/dqt";
+import DRIMarker from "./markers/dri";
+import EndOfImageMarker from "./markers/eoi";
+import EXIFMarker from "./markers/exif";
+import JFIFMarker from "./markers/jfif";
+import SOSMarker from "./markers/sos";
+import StartOfFrameMarker from "./markers/sof";
+import StartOfImageMarker from "./markers/soi";
 
 const UnkownMarker = {
   length: r.uint16be,
   buf: new r.Buffer((parent) => parent.length - 2),
-}
+};
 
 const unknownMarkers = Array(63)
   .fill(0)
-  .reduce((acc, v, i) => ({ ...acc, [i + 0xffc0]: UnkownMarker }), {})
+  .reduce((acc, v, i) => ({ ...acc, [i + 0xffc0]: UnkownMarker }), {});
 
 const Marker = new r.VersionedStruct(r.uint16be, {
   ...unknownMarkers,
@@ -44,13 +44,13 @@ const Marker = new r.VersionedStruct(r.uint16be, {
   0xffdd: DRIMarker,
   0xffe0: JFIFMarker,
   0xffe1: EXIFMarker,
-})
+});
 
-const JPEG = new r.Array(Marker)
+const JPEG = new r.Array(Marker);
 
 const decode = (buffer) => {
-  const markers = JPEG.fromBuffer(buffer)
-  return markers.map(({ version, ...rest }) => ({ type: version, ...rest }))
-}
+  const markers = JPEG.fromBuffer(buffer);
+  return markers.map(({ version, ...rest }) => ({ type: version, ...rest }));
+};
 
-export default { decode }
+export default { decode };

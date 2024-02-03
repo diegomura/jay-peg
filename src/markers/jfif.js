@@ -1,4 +1,4 @@
-import * as r from 'restructure'
+import * as r from "restructure";
 
 const JFIFMarker = {
   length: r.uint16be,
@@ -9,6 +9,6 @@ const JFIFMarker = {
   yDensity: r.uint16be,
   thumbnailWidth: r.uint8,
   thumbnailHeight: r.uint8,
-}
+};
 
-export default JFIFMarker
+export default JFIFMarker;
