@@ -1,5 +1,6 @@
 import * as r from "restructure";
 import {
+  readUInt8,
   readUInt16BE,
   readUInt16LE,
   readUInt32BE,
@@ -168,7 +169,7 @@ class IDFEntries {
 
     switch (dataFormat) {
       case 1:
-        return dataValue.readUInt8(0);
+        return readUInt8(dataValue, 0)
       case 2:
         return dataValue.toString("ascii").replace(/\0+$/, "");
       case 3:
@@ -193,7 +194,7 @@ class IDFEntries {
     }
   }
 
-  _decodeIDFEntries(buffer, tags, offset) {
+  _decodeIDFEntries(buffer, tags, offset, log = false) {
     let pos = 2;
 
     const entries = {};
@@ -242,7 +243,7 @@ class IDFEntries {
   }
 
   decode(stream, parent) {
-    const buffer = stream.buffer.slice(stream.pos);
+    let buffer = stream.buffer.slice(stream.pos);
     const offsetToFirstIFD = parent.offsetToFirstIFD;
 
     if (offsetToFirstIFD > buffer.length) {
@@ -254,9 +255,9 @@ class IDFEntries {
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
     if (exifIFDPointer) {
-      const subuffer = buffer.slice(exifIFDPointer - offsetToFirstIFD);
+      buffer = buffer.slice(exifIFDPointer - offsetToFirstIFD);
       entries.subExif = this._decodeIDFEntries(
-        subuffer,
+        buffer,
         tags.ifd,
         exifIFDPointer,
       );
@@ -264,10 +265,10 @@ class IDFEntries {
 
     if (gpsInfoIFDPointer) {
       const gps = gpsInfoIFDPointer;
-      const subuffer = buffer.slice(
+      buffer = buffer.slice(
         exifIFDPointer ? gps - exifIFDPointer : gps - offsetToFirstIFD,
       );
-      entries.gpsInfo = IFDHandler(subuffer, tags.gps, gps);
+      entries.gpsInfo = this._decodeIDFEntries(buffer, tags.gps, gps, true);
     }
 
     stream.pos += parent.parent.length - 16;
