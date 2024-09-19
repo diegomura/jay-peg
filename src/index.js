@@ -11,14 +11,14 @@ import SOSMarker from "./markers/sos.js";
 import StartOfFrameMarker from "./markers/sof.js";
 import StartOfImageMarker from "./markers/soi.js";
 
-const UnkownMarker = {
+const UnknownMarker = {
   length: r.uint16be,
   buf: new r.Buffer((parent) => parent.length - 2),
 };
 
 const unknownMarkers = Array(63)
   .fill(0)
-  .reduce((acc, v, i) => ({ ...acc, [i + 0xffc0]: UnkownMarker }), {});
+  .reduce((acc, v, i) => ({ ...acc, [i + 0xffc0]: UnknownMarker }), {});
 
 const Marker = new r.VersionedStruct(r.uint16be, {
   ...unknownMarkers,
