@@ -256,7 +256,7 @@ class IDFEntries {
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
     if (exifIFDPointer) {
-      buffer = buffer.slice(exifIFDPointer - offsetToFirstIFD);
+      buffer = buffer.slice(exifIFDPointer - 8);
       entries.subExif = this._decodeIDFEntries(
         buffer,
         tags.ifd,
