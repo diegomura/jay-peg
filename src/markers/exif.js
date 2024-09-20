@@ -251,11 +251,12 @@ class IDFEntries {
       return {};
     }
 
-    const entries = this._decodeIDFEntries(buffer, tags.ifd, offsetToFirstIFD);
+    const firstIFDBuffer = buffer.slice(offsetToFirstIFD - 8);
+    const entries = this._decodeIDFEntries(firstIFDBuffer, tags.ifd, offsetToFirstIFD);
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
     if (exifIFDPointer) {
-      buffer = buffer.slice(exifIFDPointer - offsetToFirstIFD);
+      buffer = buffer.slice(exifIFDPointer - 8);
       entries.subExif = this._decodeIDFEntries(
         buffer,
         tags.ifd,
