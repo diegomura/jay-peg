@@ -256,9 +256,9 @@ class IDFEntries {
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
     if (exifIFDPointer) {
-      buffer = buffer.slice(exifIFDPointer - 8);
+      const exifIFDBuffer = buffer.slice(exifIFDPointer - 8);
       entries.subExif = this._decodeIDFEntries(
-        buffer,
+        exifIFDBuffer,
         tags.ifd,
         exifIFDPointer,
       );
@@ -266,10 +266,8 @@ class IDFEntries {
 
     if (gpsInfoIFDPointer) {
       const gps = gpsInfoIFDPointer;
-      buffer = buffer.slice(
-        exifIFDPointer ? gps - exifIFDPointer : gps - offsetToFirstIFD,
-      );
-      entries.gpsInfo = this._decodeIDFEntries(buffer, tags.gps, gps, true);
+      const gpsBuffer = buffer.slice(gps - 8);
+      entries.gpsInfo = this._decodeIDFEntries(gpsBuffer, tags.gps, gps, true);
     }
 
     stream.pos += parent.parent.length - 16;
