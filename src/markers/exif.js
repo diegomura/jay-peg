@@ -195,7 +195,7 @@ class IDFEntries {
   }
 
   _decodeIDFEntries(buffer, tags, offset, log = false) {
-    let pos = 2;
+    let pos = 2 + offset;
 
     const entries = {};
 
@@ -205,7 +205,7 @@ class IDFEntries {
     const uint32 = (pos) =>
       this.bigEndian ? readUInt32BE(buffer, pos) : readUInt32LE(buffer, pos);
 
-    const numberOfEntries = uint16(0);
+    const numberOfEntries = uint16(offset);
 
     for (let i = 0; i < numberOfEntries; i++) {
       const tagAddress = buffer.slice(pos, pos + 2);
@@ -217,11 +217,9 @@ class IDFEntries {
       let dataValue = buffer.slice(pos + 8, pos + 12);
 
       if (dataLength > 4) {
-        const valueOffset = this.bigEndian
+        const dataOffset = this.bigEndian
           ? readUInt32BE(dataValue, 0)
           : readUInt32LE(dataValue, 0);
-
-        const dataOffset = valueOffset - offset;
 
         dataValue = buffer.slice(dataOffset, dataOffset + dataLength);
       }
@@ -251,14 +249,12 @@ class IDFEntries {
       return {};
     }
 
-    const firstIFDBuffer = buffer.slice(offsetToFirstIFD);
-    const entries = this._decodeIDFEntries(firstIFDBuffer, tags.ifd, offsetToFirstIFD);
+    const entries = this._decodeIDFEntries(buffer, tags.ifd, offsetToFirstIFD);
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
     if (exifIFDPointer) {
-      const exifIFDBuffer = buffer.slice(exifIFDPointer);
       entries.subExif = this._decodeIDFEntries(
-        exifIFDBuffer,
+        buffer,
         tags.ifd,
         exifIFDPointer,
       );
@@ -266,8 +262,7 @@ class IDFEntries {
 
     if (gpsInfoIFDPointer) {
       const gps = gpsInfoIFDPointer;
-      const gpsBuffer = buffer.slice(gps);
-      entries.gpsInfo = this._decodeIDFEntries(gpsBuffer, tags.gps, gps, true);
+      entries.gpsInfo = this._decodeIDFEntries(buffer, tags.gps, gps, true);
     }
 
     stream.pos += parent.parent.length - 16;
