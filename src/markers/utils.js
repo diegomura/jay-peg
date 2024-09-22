@@ -53,3 +53,11 @@ export const concatenateUint8Arrays = (arrays) => {
 
   return concatenatedArray;
 };
+
+export const readInt32BE = (array, offset) => {
+  return readUInt32BE(array, offset) | 0;
+};
+
+export const readInt32LE = (array, offset) => {
+  return readUInt32LE(array, offset) | 0;
+};

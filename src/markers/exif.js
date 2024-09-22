@@ -7,6 +7,8 @@ import {
   readUInt32LE,
   uint8ArrayToHexString,
   uint8ArrayToString,
+  readInt32BE,
+  readInt32LE,
 } from "./utils.js";
 
 const tags = {
@@ -156,7 +158,29 @@ class IDFEntries {
     this.bytes = [0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8];
   }
 
-  _getTagValue(dataValue, dataFormat) {
+  _getTagValue(dataValue, dataFormat, componentsNumber) {
+    switch (dataFormat) {
+      case 2:
+        return dataValue.toString("ascii").replace(/\0+$/, "");
+      case 129:
+        return dataValue.toString("utf8").replace(/\0+$/, "");
+      case 7:
+        return "0x" + dataValue.toString("hex");
+      default:
+        return this._getTagValueForNumericalData(dataValue, dataFormat, componentsNumber);
+    }
+  }
+
+  _getTagValueForNumericalData(dataValue, dataFormat, componentsNumber) {
+    const tagValue = [];
+    const componentsBytes = this.bytes[dataFormat];
+    for (let i = 0; i < componentsNumber; i += 1) {
+      tagValue.push(this._getSingleTagValueForNumericalData(dataValue, dataFormat, i * componentsBytes));
+    }
+    return tagValue.length === 1 ? tagValue[0] : tagValue;
+  }
+
+  _getSingleTagValueForNumericalData(dataValue, dataFormat, pos) {
     const uint16 = (pos) =>
       this.bigEndian
         ? readUInt16BE(dataValue, pos)
@@ -167,30 +191,25 @@ class IDFEntries {
         ? readUInt32BE(dataValue, pos)
         : readUInt32LE(dataValue, pos);
 
+    const int32 = (pos) =>
+      this.bigEndian
+        ? readInt32BE(dataValue, pos)
+        : readInt32LE(dataValue, pos);
+
     switch (dataFormat) {
       case 1:
-        return readUInt8(dataValue, 0)
-      case 2:
-        return dataValue.toString("ascii").replace(/\0+$/, "");
+        return readUInt8(dataValue, pos)
       case 3:
-        return uint16(0);
+        return uint16(pos);
       case 4:
-        return uint32(0);
+        return uint32(pos);
       case 5:
-        const tagValue = [];
-
-        for (var i = 0; i < dataValue.length; i += 8) {
-          tagValue.push(uint32(i) / uint32(i + 4));
-        }
-
-        return tagValue;
-      case 7:
-        return null;
+        return uint32(pos) / uint32(pos + 4);
+      case 9:
+        return int32(pos);
       case 10: {
-        return uint32(0) / uint32(4);
+        return int32(pos) / int32(pos + 4);
       }
-      default:
-        return "0x" + dataValue.toString("hex");
     }
   }
 
@@ -224,7 +243,7 @@ class IDFEntries {
         dataValue = buffer.slice(dataOffset, dataOffset + dataLength);
       }
 
-      const tagValue = this._getTagValue(dataValue, dataFormat);
+      const tagValue = this._getTagValue(dataValue, dataFormat, componentsNumber);
 
       const tagNumber = this.bigEndian
         ? uint8ArrayToHexString(tagAddress)
