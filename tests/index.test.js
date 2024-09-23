@@ -7,7 +7,7 @@ import JPEG from "../src";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const images = fs.readdirSync(`${__dirname}/images`);
-const nonPassingImages = ["AFCP.jpg", "ExifTool.jpg", "FotoStation.jpg"];
+const nonPassingImages = ["ExifTool.jpg"];
 const passingImages = images.filter(image => !nonPassingImages.includes(image));
 
 expect.addSnapshotSerializer({
