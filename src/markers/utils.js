@@ -11,21 +11,11 @@ export const readUInt16LE = (array, offset) => {
 };
 
 export const readUInt32BE = (array, offset) => {
-  return (
-    (array[offset] << 24) |
-    (array[offset + 1] << 16) |
-    (array[offset + 2] << 8) |
-    array[offset + 3]
-  );
+  return readInt32BE(array, offset) >>> 0;
 };
 
 export const readUInt32LE = (array, offset) => {
-  return (
-    array[offset] |
-    (array[offset + 1] << 8) |
-    (array[offset + 2] << 16) |
-    (array[offset + 3] << 24)
-  );
+  return readInt32LE(array, offset) >>> 0;
 };
 
 export const uint8ArrayToHexString = (uint8Array) => {
@@ -55,9 +45,19 @@ export const concatenateUint8Arrays = (arrays) => {
 };
 
 export const readInt32BE = (array, offset) => {
-  return readUInt32BE(array, offset) | 0;
+  return (
+    (array[offset] << 24) |
+    (array[offset + 1] << 16) |
+    (array[offset + 2] << 8) |
+    array[offset + 3]
+  );
 };
 
 export const readInt32LE = (array, offset) => {
-  return readUInt32LE(array, offset) | 0;
+  return (
+    array[offset] |
+    (array[offset + 1] << 8) |
+    (array[offset + 2] << 16) |
+    (array[offset + 3] << 24)
+  );
 };
