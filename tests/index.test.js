@@ -8,7 +8,9 @@ import JPEG from "../src";
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 const images = fs.readdirSync(`${__dirname}/images`);
 const nonPassingImages = ["ExifTool.jpg"];
-const passingImages = images.filter(image => !nonPassingImages.includes(image));
+const passingImages = images.filter(
+  (image) => !nonPassingImages.includes(image),
+);
 
 expect.addSnapshotSerializer({
   serialize: (val) => Buffer.from(val).toString("hex"),
