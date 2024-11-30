@@ -97,16 +97,23 @@ Each `ImageMarker` object in the output array adheres to the following structure
 
 ## Performance
 
-Performance is a key focus of `jay-peg`. In a benchmark test using a 2448×3264, 2.2MB JPEG image, the decoding speed was measured as follows:
+Performance is a key focus of `jay-peg`. 4 sizes of images were benchmarked:
+
+- `small`: 300 × 150, 8KB image
+- `medium`: 800 × 600, 70KB image
+- `large`: 1920 × 1080, 332KB image
+- `huge`: 2448×3264, 2.2MB image
+
+For each of these, the decoding speed was measured as follows:
 
 ```
-Benchmarked: small:  x 11,597 ops/sec ±0.60% (95 runs sampled)
-Benchmarked: medium:  x 11,219 ops/sec ±0.20% (98 runs sampled)
-Benchmarked: large:  x 7,744 ops/sec ±0.27% (100 runs sampled)
-Benchmarked: huge:  x 2,019 ops/sec ±0.36% (96 runs sampled)
+Benchmarked: small:  x 13,393 ops/sec ±4.77% (96 runs sampled)
+Benchmarked: medium:  x 12,894 ops/sec ±0.10% (99 runs sampled)
+Benchmarked: large:  x 9,241 ops/sec ±0.25% (99 runs sampled)
+Benchmarked: huge:  x 2,672 ops/sec ±0.12% (100 runs sampled)
 ```
 
-It's worth noting that the performance is significantly improved on smaller and simpler images.
+_Measures were taken in an MacBook Air 2024, Apple M3 w/16GB of RAM._
 
 ## License
 
