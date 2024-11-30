@@ -97,7 +97,7 @@ Each `ImageMarker` object in the output array adheres to the following structure
 
 ## Performance
 
-Performance is a key focus of `jay-peg``. In a benchmark test using a 2448×3264, 2.2MB JPEG image, the decoding speed was measured as follows:
+Performance is a key focus of `jay-peg`. In a benchmark test using a 2448×3264, 2.2MB JPEG image, the decoding speed was measured as follows:
 
 ```
 Benchmarked: small:  x 11,597 ops/sec ±0.60% (95 runs sampled)
