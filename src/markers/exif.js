@@ -213,8 +213,10 @@ class IDFEntries {
     }
   }
 
-  _decodeIDFEntries(buffer, tags, offset, log = false) {
+  _decodeIDFEntries(_buffer, tags, offset, log = false) {
     let pos = 2 + offset;
+
+    const buffer = new Buffer(_buffer);
 
     const entries = {};
 
