@@ -264,14 +264,14 @@ class IDFEntries {
     const offsetToFirstIFD = parent.offsetToFirstIFD;
 
     if (offsetToFirstIFD > buffer.length) {
-      stream.pos += parent.parent.length - 16;
+      // Stream position will be corrected by TIFFHeader
       return {};
     }
 
     const entries = this._decodeIDFEntries(buffer, tags.ifd, offsetToFirstIFD);
     const { exifIFDPointer, gpsInfoIFDPointer } = entries;
 
-    if (exifIFDPointer) {
+    if (exifIFDPointer && exifIFDPointer < buffer.length) {
       entries.subExif = this._decodeIDFEntries(
         buffer,
         tags.ifd,
@@ -279,13 +279,11 @@ class IDFEntries {
       );
     }
 
-    if (gpsInfoIFDPointer) {
-      const gps = gpsInfoIFDPointer;
-      entries.gpsInfo = this._decodeIDFEntries(buffer, tags.gps, gps, true);
+    if (gpsInfoIFDPointer && gpsInfoIFDPointer < buffer.length) {
+      entries.gpsInfo = this._decodeIDFEntries(buffer, tags.gps, gpsInfoIFDPointer);
     }
 
-    stream.pos += parent.parent.length - 16;
-
+    // Stream position will be corrected by TIFFHeader
     return entries;
   }
 }
@@ -303,15 +301,24 @@ const IFDData = (bigEndian) => {
 
 class TIFFHeader {
   decode(stream, parent) {
+    // TIFF data length = marker length - 2 (length field) - 6 (identifier)
+    const dataLength = parent.length - 8;
+    const startPos = stream.pos;
+
     const byteOrder = uint8ArrayToString(
-      stream.buffer.slice(stream.pos, stream.pos + 2),
+      stream.buffer.slice(startPos, startPos + 2),
     );
 
     const bigEndian = byteOrder === "MM";
-
-    stream.pos += 2;
+    stream.pos = startPos + 2;
 
     const data = IFDData(bigEndian).decode(stream, parent);
+
+    // Skip to end of EXIF data and any null padding
+    stream.pos = startPos + dataLength;
+    while (stream.pos < stream.length && stream.buffer[stream.pos] === 0x00) {
+      stream.pos++;
+    }
 
     return data.entries;
   }
