@@ -247,7 +247,7 @@ class IDFEntries {
 
       const tagNumber = this.bigEndian
         ? uint8ArrayToHexString(tagAddress)
-        : uint8ArrayToHexString(tagAddress.reverse());
+        : uint8ArrayToHexString(new Uint8Array(tagAddress).reverse());
 
       const tagName = tags[tagNumber];
 
