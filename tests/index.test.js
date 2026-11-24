@@ -32,3 +32,14 @@ describe("decode w/int arrays", () => {
     expect(markers).toMatchSnapshot();
   });
 });
+
+describe("decode does not mutate input", () => {
+  it.each(passingImages)("%s", (image) => {
+    const buffer = fs.readFileSync(`${__dirname}/images/${image}`);
+    const original = Buffer.from(buffer);
+
+    JPEG.decode(buffer);
+
+    expect(buffer.equals(original)).toBe(true);
+  });
+});
